@@ -1,6 +1,6 @@
 # Re:Source Predict AI v3.0
 
-> **대회 제출용 공개 저장소** — AI Bootcamp Innovation Challenger 2026 · 계명대학교 AICD
+> **대회 제출용 공개 저장소** — AI Bootcamp Innovation Challenger 2026 
 >
 > - **라이선스:** [GNU AGPL-3.0](LICENSE). 결함 위치 박스 표시에 쓰는 [Ultralytics YOLO11](https://github.com/ultralytics/ultralytics)(AGPL-3.0)에 맞춰 이 저장소 전체를 AGPL-3.0으로 공개합니다.
 > - **포함한 모델:** `models/kamp`(KAMP 학습 구간 불량률 집계·센서 모델), `models/supply`(수주량 모델·성능 지표). 그래서 내려받은 그대로도 생산계획 등록 → 폐기물 kg 예측 → 보관량 예측·수거 추천이 동작합니다.
