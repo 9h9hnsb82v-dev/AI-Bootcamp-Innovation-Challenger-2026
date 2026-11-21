@@ -1,6 +1,6 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 # EfficientNet-B0 전체 데이터 재학습 (사용자 요청 2026-11-13: 원본 전체 51,986장, 20에폭, 학습곡선 확인, 모델 조합 검증용 점수 저장)
-# 실행: az ml job create -f azureml/job_effnet_full_e20_h100.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+# 실행: az ml job create -f azureml/job_effnet_full_e20_h100.yml -w <workspace> -g <resource-group>
 type: command
 display_name: resource-effnet-b0-full-e20-h100
 experiment_name: resource-predict-ai-vision

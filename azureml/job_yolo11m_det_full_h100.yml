@@ -2,7 +2,7 @@ $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 # YOLO11m 결함 위치 검출 (사용자 결정 2026-11-14 (b): AI-Hub 원본 전체로 직접 학습, 약 $10~15)
 # Ultralytics AGPL-3.0 - 내부 전용, 코드·모델 공개/배포 금지(사용자 허락 전). 서비스에서는 위치 표시용(판정 아님).
 # 라벨 자산: az ml data create -n aihub-full-det-labels -v 1 --type uri_folder --path data/processed/aihub_det_labels
-# 실행: az ml job create -f azureml/job_yolo11m_det_full_h100.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+# 실행: az ml job create -f azureml/job_yolo11m_det_full_h100.yml -w <workspace> -g <resource-group>
 type: command
 display_name: resource-yolo11m-det-full-e20-h100
 experiment_name: resource-predict-ai-vision

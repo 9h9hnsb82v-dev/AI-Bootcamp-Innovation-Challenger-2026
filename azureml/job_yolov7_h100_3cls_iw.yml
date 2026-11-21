@@ -1,6 +1,6 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 # YOLOv7 개선 실험 ①+② (사용자 승인 2026-11-10) - gap_normal 제거(3클래스, 양품=배경) + image-weights(배경 평균 가중치 보정)
-# 실행: az ml job create -f azureml/job_yolov7_h100_3cls_iw.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+# 실행: az ml job create -f azureml/job_yolov7_h100_3cls_iw.yml -w <workspace> -g <resource-group>
 type: command
 display_name: resource-yolov7-aihub-h100-3cls-iw
 experiment_name: resource-predict-ai-vision

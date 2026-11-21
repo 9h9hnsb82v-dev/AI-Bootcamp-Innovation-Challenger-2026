@@ -1,6 +1,6 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 # KAMP ID4(불량률 기준선·센서 XGBoost) + KAMP ID40(수주량 baseline/HGB/XGB 시간순 백테스트)
-# 실행: az ml job create -f azureml/job_tabular.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+# 실행: az ml job create -f azureml/job_tabular.yml -w <workspace> -g <resource-group>
 type: command
 display_name: resource-tabular-kamp4-kamp40
 experiment_name: resource-predict-ai

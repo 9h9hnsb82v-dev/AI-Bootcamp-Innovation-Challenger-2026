@@ -1,7 +1,7 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 # 휀더 단차 전용 이진 분류기 (사용자 요청 2026-11-13: 단차 부위를 원본 해상도로 잘라 학습, 상한/조준 오차/조각 탐색 3방식 평가)
 # 데이터 자산: az ml data create -n aihub-gap-crops -v 1 --type uri_folder --path data/processed/aihub_gap
-# 실행: az ml job create -f azureml/job_gap_effb0_h100.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+# 실행: az ml job create -f azureml/job_gap_effb0_h100.yml -w <workspace> -g <resource-group>
 type: command
 display_name: resource-gap-effb0-h100
 experiment_name: resource-predict-ai-vision

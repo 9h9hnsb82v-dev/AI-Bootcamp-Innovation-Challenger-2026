@@ -38,6 +38,30 @@ $env:RESOURCE_DB="data/app/demo.db"; .venv\Scripts\streamlit run ui/app.py
 ```
 Ollama(선택): 기본 모델 `benedict/linkbricks-llama3.1-korean:8b`(평가 8문항 도구·인자·답변 충실도 100%)(도구 호출 평가: `python -m agent.eval_tool_calls <모델>`). 설치 후 `.env`에 `OLLAMA_BASE_URL`, `OLLAMA_MODEL`을 설정한다. Ollama 없이도 모든 폼은 동작한다.
 
+## 데이터·모델 준비 (직접 받아 재현)
+
+이 저장소에는 데이터와 이미지 모델 가중치를 넣지 않았습니다(각 제공처 약관·용량). 아래 경로에 받아 두면 전체 기능이 동작합니다.
+
+| 데이터 | 받는 곳 | 넣을 위치 |
+|---|---|---|
+| KAMP ID 4 사출성형 공정·불량 데이터 | [KAMP 인공지능 중소벤처 제조 플랫폼](https://www.kamp-ai.kr) | `data/raw/kamp/04. Dataset_Molding.zip` |
+| KAMP ID 40 사출성형 공급망최적화 AI 데이터셋 | KAMP | `data/raw/kamp_supply/Dataset_사출성형 공급망최적화 AI 데이터셋.zip` |
+| 부품 품질 검사 영상 데이터(자동차) | [AI-Hub](https://www.aihub.or.kr) (데이터셋 162) | `data/raw/aihub/162.부품 품질 검사 영상 데이터(자동차)/` |
+| Car parts segmentation (car-seg, CC BY 4.0) | Roboflow Universe · Gianmarco Russo | `data/raw/carparts_seg/carparts-seg.zip` |
+| Car parts and car damages dataset (CC0 1.0) | Humans in the Loop | `data/raw/hitl_carparts/` |
+| 전국폐기물처리업소표준데이터 | [공공데이터포털](https://www.data.go.kr) | `data/raw/waste_processors/전국폐기물처리업소표준데이터.csv` |
+| 행정경계 중심점 (CC BY 4.0) | vuski/admdongkor (통계청 SGIS 가공본) | `data/raw/admin_centroids/coordinate_UTMK_names.tsv` |
+| 챗봇 문서(법령) | 국가법령정보센터 | `python -m scripts.fetch_laws` |
+| 챗봇 문서(재활용가능자원 가격조사) | 한국환경공단 순환자원정보센터 | `python -m scripts.build_price_docs` |
+| TMAP 앱 키(처리업체 도로거리) | SK open API | `.streamlit/secrets.toml` (`secrets.toml.example` 참고) |
+
+**모델 다시 만들기**
+- KAMP 불량률·수주량: 저장소에 포함(`models/kamp`, `models/supply`). 다시 만들려면 `python -m ml.kamp.baseline`, `python -m ml.supply.train`.
+- 이미지 판정(EfficientNet-B0 + DINOv2 + 2차 판정): 세션 비겹침 분할 `python -m ml.vision.resplit_session` → 학습 작업 `azureml/job_sd_effnet.yml`, `azureml/job_sd_dinov2_cls.yml`, `azureml/job_sd_gap.yml`, `azureml/job_sd_gap_dinov2.yml` → 조합 `python -m ml.vision.fit_dino_ensemble`, `python -m ml.vision.fit_gap_dino` → `models/vision/ensemble_sd_dino/`.
+- 결함 위치 박스(YOLO11 검출): `azureml/job_sd_det.yml` → `models/vision/yolo11m_det/`.
+- 부품 위치(Mask R-CNN): `python -m ml.vision.prepare_partseg` → `azureml/job_partseg_h100_v2.yml` → `models/vision/partseg/`.
+- Azure ML 작업 파일의 `<workspace>`, `<resource-group>`은 각자의 작업 공간으로 바꿔 실행합니다.
+
 ## 데이터 경계 (코드로 강제)
 | 트랙 | 모듈 | 산출 단위 | 연결 규칙 |
 |---|---|---|---|
@@ -62,7 +86,7 @@ Ollama(선택): 기본 모델 `benedict/linkbricks-llama3.1-korean:8b`(평가 8�
 ```powershell
 .venv\Scripts\python -m ml.vision.prepare_partseg          # HITL(CC0) + carparts-seg(CC BY 4.0) → data/processed/partseg
 .venv\Scripts\python -m ml.vision.pseudo_label_carparts    # v1 모델로 carparts 절반에 의사 라벨(휀더 등) 추가
-az ml job create -f azureml/job_partseg_h100_v2.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+az ml job create -f azureml/job_partseg_h100_v2.yml -w <workspace> -g <resource-group>
 ```
 
 ## 데이터 출처 표기

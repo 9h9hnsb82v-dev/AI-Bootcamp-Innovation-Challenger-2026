@@ -1,6 +1,6 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 # 1단계 부품 영역 분할 Mask R-CNN (사용자 승인 대기 - 학습 데이터 HITL CC0, 외부 검증 carparts-seg CC BY 4.0, 모델 torchvision BSD)
-# 실행: az ml job create -f azureml/job_partseg_h100.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+# 실행: az ml job create -f azureml/job_partseg_h100.yml -w <workspace> -g <resource-group>
 type: command
 display_name: resource-partseg-maskrcnn-h100-v1-split821
 experiment_name: resource-predict-ai-vision

@@ -1,6 +1,6 @@
 # Azure ML 실행 기록
 
-사용자 승인: 2026-11-10. 워크스페이스 `AIBIC_10_24_workspace`(RG `stu_AIBIC2026_15_RG_EUS2`, eastus2, 구독 성균관대학교)
+사용자 승인: 2026-11-10. 워크스페이스 `<workspace>`(RG `<resource-group>`, eastus2, 구독 <subscription>)
 
 | 대상 | 컴퓨트 | 실행 | 등록 모델 |
 |---|---|---|---|
@@ -22,9 +22,9 @@
 ## 재현
 ```powershell
 # 환경(1회): Python 3.11 + 로컬과 같은 버전의 패키지
-az ml environment create -f azureml/environment/environment.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+az ml environment create -f azureml/environment/environment.yml -w <workspace> -g <resource-group>
 # 표 형식 학습 작업(코드는 .amlignore를 적용해 업로드, KAMP ZIP 2개는 job inputs로 업로드)
-az ml job create -f azureml/job_tabular.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+az ml job create -f azureml/job_tabular.yml -w <workspace> -g <resource-group>
 # 이미지(팀 VM): 번들 생성 → scp → VM에서 학습 → 결과를 워크스페이스에 기록
 .venv\Scripts\python -m scripts.bundle_vision_for_vm <bundle.tar>
 .venv-aml\Scripts\python azureml/log_external_vision_run.py <모델 폴더>
@@ -38,5 +38,5 @@ az ml job create -f azureml/job_tabular.yml -w AIBIC_10_24_workspace -g stu_AIBI
 ## 비용·정리 메모
 - `resource-cpu`는 유휴 시 0대로 축소된다.
 - `gpu-h100` (Standard_NC40ads_H100_v5, 0~1대, 유휴 300초 후 0대): 위 표의 실험에 사용했다. 유휴 시 비용 없음. 필요 없으면 삭제한다:
-  `az ml compute delete -n gpu-h100 -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2`
+  `az ml compute delete -n gpu-h100 -w <workspace> -g <resource-group>`
 - 팀 VM AICD는 팀 리소스다. 이 프로젝트는 `~/resource_predict_v3_aml` 폴더만 사용하고, 접속에는 이 PC의 전용 키 `~/.ssh/aicd_ed25519`를 쓴다.

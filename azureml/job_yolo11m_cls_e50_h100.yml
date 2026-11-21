@@ -1,6 +1,6 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 # YOLO11 분류 비교 실험 (사용자 승인 2026-11-11, A안). Ultralytics AGPL-3.0 - 내부 실험 전용, 코드·모델 공개/배포 금지(사용자 허락 전)
-# 실행: az ml job create -f azureml/job_yolo11m_cls_e50_h100.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2  (사용자 요청 2026-11-11: 에폭 50)
+# 실행: az ml job create -f azureml/job_yolo11m_cls_e50_h100.yml -w <workspace> -g <resource-group>  (사용자 요청 2026-11-11: 에폭 50)
 type: command
 display_name: resource-yolo11m-cls-e50-split821-h100
 experiment_name: resource-predict-ai-vision

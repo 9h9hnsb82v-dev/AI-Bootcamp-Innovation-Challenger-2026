@@ -1,6 +1,6 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 # YOLOv7 시범 비교 학습 (사용자 승인 2026-11-10: 개인 워크스페이스 gpu-h100 클러스터)
-# 실행: az ml job create -f azureml/job_yolov7_h100.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+# 실행: az ml job create -f azureml/job_yolov7_h100.yml -w <workspace> -g <resource-group>
 type: command
 display_name: resource-yolov7-aihub-h100-e100
 experiment_name: resource-predict-ai-vision

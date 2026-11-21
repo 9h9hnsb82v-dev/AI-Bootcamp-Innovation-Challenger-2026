@@ -1,6 +1,6 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 # EfficientNet-B0 6클래스 근접 사진 판정 재학습 - 8:2:1 재분할(사용자 결정 2026-11-11), 448px, 8에폭
-# 실행: az ml job create -f azureml/job_effnet_h100.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+# 실행: az ml job create -f azureml/job_effnet_h100.yml -w <workspace> -g <resource-group>
 type: command
 display_name: resource-effnet-b0-split821-h100
 experiment_name: resource-predict-ai-vision

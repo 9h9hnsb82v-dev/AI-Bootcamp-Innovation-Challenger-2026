@@ -15,7 +15,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-WS = {"workspace": "AIBIC_10_24_workspace", "rg": "stu_AIBIC2026_15_RG_EUS2"}
+WS = {"workspace": "<workspace>", "rg": "<resource-group>"}
 MODEL_NAME = "resource-aihub-vision-effb0"
 
 
