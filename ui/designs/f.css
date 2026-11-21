@@ -1,0 +1,66 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;700&display=swap");
+/* 테이스트안 · design-taste-frontend (white-mint-tiles). 강조색은 민트 #a1ffcb 하나. 움직임 줄이기 설정을 따른다. */
+:root{--f-ink:#232323;--f-mute:#5b5b5b;--f-tile:#f3f3f3;--f-line:#ececec;--f-mint:#a1ffcb}
+.f-brand{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:500;letter-spacing:-.02em}
+.f-ring{width:18px;height:18px;border-radius:50%;border:5px solid var(--f-ink);box-sizing:border-box;display:inline-block}
+.f-h1,.f-h2,.f-h3,.f-fact,.f-note{word-break:keep-all}
+.f-h1{margin:0 0 20px;font-size:46px;line-height:1.12;font-weight:500;letter-spacing:-.035em;color:var(--f-ink)}
+.f-fact{margin:0;font-size:18px;line-height:1.6;color:#4a4a4a;max-width:500px}
+.f-fact strong{font-weight:500;color:var(--f-ink)}
+.f-h2{margin:0 0 8px;font-size:32px;font-weight:500;letter-spacing:-.025em}
+.f-h3{margin:0 0 18px;font-size:24px;font-weight:500;letter-spacing:-.02em;line-height:1.3}
+.f-mono,.f-node b,.f-big{font-family:'Geist Mono',monospace;font-variant-numeric:tabular-nums}
+@media (max-width: 900px){.f-h1{font-size:38px}}
+
+/* 버튼: 민트 주 버튼 + 회색 보조 버튼, 살짝 뜨고 눌림 */
+.st-key-f_cta{margin-top:8px}
+.st-key-f_book button,.st-key-f_trend button{padding:12px 22px;border-radius:10px;border:none;font-weight:500;font-size:16px;transition:transform .15s ease,background-color .15s ease}
+.st-key-f_book button{background:var(--f-mint);color:var(--f-ink)}
+.st-key-f_trend button{background:var(--f-tile);color:var(--f-ink)}
+.st-key-f_book button:hover,.st-key-f_trend button:hover{transform:translateY(-1px);color:var(--f-ink)}
+.st-key-f_book button:active,.st-key-f_trend button:active{transform:translateY(0) scale(.98)}
+.st-key-f_book button:focus-visible,.st-key-f_trend button:focus-visible{outline:2px solid var(--f-ink);outline-offset:3px}
+
+/* 앱 창 모양 그래프 */
+.st-key-f_frame{background:var(--f-tile);border-radius:16px;padding:12px;gap:0}
+.st-key-f_frame > div{background:#fff}
+.st-key-f_frame > div:first-child{border-radius:10px 10px 0 0;border:1px solid #e6e6e6;border-bottom:1px solid #efefef}
+.st-key-f_frame > div:last-child{border-radius:0 0 10px 10px;border:1px solid #e6e6e6;border-top:none;padding:12px 12px 4px}
+.f-bar{display:flex;align-items:center;gap:6px;padding:10px 14px}
+.f-bar i{width:9px;height:9px;border-radius:50%;background:#dcdcdc}
+.f-bar span{margin-left:10px;font-size:13px;color:var(--f-mute)}
+
+/* 흐름도 */
+.st-key-f_flow{background:var(--f-tile);border-radius:20px;padding:40px 36px;margin:32px 0}
+.f-node{background:#fff;border-radius:12px;padding:18px 20px}
+.f-node span{display:block;font-size:14px;color:var(--f-mute)}
+.f-node b{display:block;font-weight:400;font-size:26px;margin-top:6px}
+.f-node.dark{background:var(--f-ink);color:#fff}
+.f-node.dark span{color:#cfcfcf}
+.f-wire{height:2px;background:#cfcfcf;position:relative;margin:0 -8px}
+.f-pulse{position:absolute;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--f-ink);animation:f-pulse 3s linear infinite}
+.f-pulse.d2{animation-delay:1s}
+@keyframes f-pulse{0%{left:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{left:calc(100% - 8px);opacity:0}}
+[class*="st-key-f_lane_"] a{display:flex;background:#fff;border-radius:12px;padding:14px 18px;width:100%;text-decoration:none;transition:transform .2s ease,box-shadow .2s ease}
+[class*="st-key-f_lane_"][class*="_hot"] a{background:var(--f-mint)}
+[class*="st-key-f_lane_"] a:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(35,35,35,.08)}
+[class*="st-key-f_lane_"] a p{font-size:15px}
+
+/* 아래 카드 */
+.st-key-f_card_prod,.st-key-f_card_acc{border:1px solid var(--f-line);border-radius:16px;padding:28px;transition:transform .2s ease,box-shadow .2s ease}
+.st-key-f_card_prod:hover,.st-key-f_card_acc:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(35,35,35,.08)}
+.f-row{display:grid;grid-template-columns:96px 1fr 72px;gap:14px;align-items:center;font-size:15px;margin:0 0 14px}
+.f-row .f-mono{text-align:right}
+.f-track{height:10px;background:var(--f-tile);border-radius:5px;overflow:hidden}
+.f-track i{display:block;height:10px;background:var(--f-ink);border-radius:5px}
+.f-big{font-size:72px;line-height:1;letter-spacing:-.04em;margin:0 0 18px}
+.f-note{margin:0;font-size:15px;line-height:1.6;color:#4a4a4a}
+
+/* 첫 화면은 한 번만 올라오듯 */
+@keyframes f-enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.f-enter{animation:f-enter .6s cubic-bezier(.2,.7,.2,1) both}
+.st-key-f_frame{animation:f-enter .6s .12s cubic-bezier(.2,.7,.2,1) both}
+@media (prefers-reduced-motion: reduce){
+  .f-enter,.st-key-f_frame,.f-pulse{animation:none}.f-pulse{display:none}
+  [class*="st-key-f_lane_"] a,.st-key-f_card_prod,.st-key-f_card_acc,.st-key-f_book button,.st-key-f_trend button{transition:none}
+}

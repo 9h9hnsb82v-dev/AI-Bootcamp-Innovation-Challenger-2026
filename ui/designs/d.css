@@ -1,0 +1,22 @@
+/* 추천안 · A 기본 + C 5단계 카드. 색은 Streamlit 테마 변수를 따르므로 다크 모드에서도 맞는다. */
+.d-brand{display:flex;align-items:center;gap:10px;font-size:17px;padding:2px 0 6px}
+.d-logo{width:32px;height:32px;border-radius:8px;background:#334155;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+.d-step{display:flex;flex-direction:column;gap:6px}
+.d-step-lab{font-size:12px;font-weight:600;color:#047857}
+.d-step-val{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.15}
+.d-step-val small{font-size:14px;font-weight:500;opacity:.7}
+.d-step-sub{font-size:13px;opacity:.75}
+[class*="st-key-d_step_"]{transition:transform .15s ease,box-shadow .15s ease}
+[class*="st-key-d_step_"]:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(15,23,42,.08)}
+[class*="st-key-d_step_"][class*="_hot"]{background:rgba(220,38,38,.08);border:2px solid #DC2626 !important}
+[class*="st-key-d_step_"][class*="_hot"] .d-step-lab,[class*="st-key-d_step_"][class*="_hot"] .d-step-val{color:#DC2626}
+.st-key-d_task_hot{background:rgba(220,38,38,.08);border-radius:10px;padding:12px 14px}
+.st-key-d_task_hot strong{color:#B91C1C}
+.st-key-d_task{background:rgba(100,116,139,.10);border-radius:10px;padding:12px 14px}
+.st-key-d_task_hot [data-testid="stMarkdownContainer"],.st-key-d_task [data-testid="stMarkdownContainer"]{flex:1}
+.d-acc{display:grid;grid-template-columns:48px 1fr 56px;gap:10px;align-items:center;font-size:14px;margin:4px 0}
+.d-acc span:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.d-acc-bar{height:8px;background:rgba(100,116,139,.18);border-radius:4px;overflow:hidden}
+.d-acc-bar i{display:block;height:8px;background:#059669;border-radius:4px}
+.d-acc-bar i.warn{background:#B45309}
+@media (prefers-reduced-motion: reduce){[class*="st-key-d_step_"]{transition:none}[class*="st-key-d_step_"]:hover{transform:none}}

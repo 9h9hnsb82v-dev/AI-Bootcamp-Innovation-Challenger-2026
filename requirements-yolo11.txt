@@ -1,0 +1,10 @@
+# 근접 사진 판정 YOLO11m-cls 백엔드 (models/vision/serving.json 의 backend = "yolo11m_cls")
+# Ultralytics 는 AGPL-3.0 - 내부 사용 전용. 사용자 허락 전 코드·모델 외부 공개/배포 금지.
+# opencv-python(GUI 빌드) 충돌을 피하려고 --no-deps 로 설치하고 필요한 의존성만 고정한다.
+#   .venv\Scripts\pip install --no-deps -r requirements-yolo11.txt
+ultralytics==8.3.40
+ultralytics-thop==2.0.13
+py-cpuinfo==9.0.0
+psutil==6.1.1
+tqdm==4.67.1
+seaborn==0.13.2

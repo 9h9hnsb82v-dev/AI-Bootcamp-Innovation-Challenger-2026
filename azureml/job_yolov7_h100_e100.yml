@@ -1,0 +1,21 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+# YOLOv7 시범 비교 학습 (사용자 승인 2026-11-10: 개인 워크스페이스 gpu-h100 클러스터)
+# 실행: az ml job create -f azureml/job_yolov7_h100.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+type: command
+display_name: resource-yolov7-aihub-h100-e100
+experiment_name: resource-predict-ai-vision
+description: AI-Hub 도어/범퍼/휀더 결함 검출 YOLOv7(EXIF 회전 보정 라벨, EfficientNet v2와 동일 분할) — 640px, 100에폭(추가 학습 실험 - 30에폭 미수렴)
+code: ..
+environment: azureml:resource-yolov7@latest
+compute: azureml:gpu-h100
+inputs:
+  yolo_data:
+    type: uri_folder
+    path: ../data/processed/aihub/yolo
+outputs:
+  results:
+    type: uri_folder
+environment_variables:
+  TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD: "1"
+command: >-
+  bash azureml/yolo/run_yolov7.sh ${{inputs.yolo_data}} ${{outputs.results}} 100 32

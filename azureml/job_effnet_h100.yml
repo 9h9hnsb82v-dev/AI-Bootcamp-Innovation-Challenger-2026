@@ -1,0 +1,30 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+# EfficientNet-B0 6클래스 근접 사진 판정 재학습 - 8:2:1 재분할(사용자 결정 2026-11-11), 448px, 8에폭
+# 실행: az ml job create -f azureml/job_effnet_h100.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+type: command
+display_name: resource-effnet-b0-split821-h100
+experiment_name: resource-predict-ai-vision
+description: AI-Hub 도어/범퍼/휀더 6클래스 EfficientNet-B0 (EXIF 보정, 8 2 1 분할 8640/2160/1080) - 448px 8에폭
+code: ..
+environment: azureml:resource-yolov7@latest
+compute: azureml:gpu-h100
+resources:
+  shm_size: 16g
+inputs:
+  images:
+    type: uri_folder
+    path: ../data/processed/aihub/images
+  manifest:
+    type: uri_file
+    path: ../data/processed/aihub/manifest.csv
+outputs:
+  results:
+    type: uri_folder
+environment_variables:
+  RESOURCE_VISION_IMG: "448"
+  RESOURCE_VISION_TAG: "_exif_split821"
+command: >-
+  mkdir -p data/processed/aihub &&
+  ln -s ${{inputs.images}} data/processed/aihub/images &&
+  cp ${{inputs.manifest}} data/processed/aihub/manifest.csv &&
+  RESOURCE_VISION_OUT=${{outputs.results}} python -m ml.vision.train --epochs 8 --batch 32

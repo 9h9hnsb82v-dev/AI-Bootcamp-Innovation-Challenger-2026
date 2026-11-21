@@ -1,0 +1,26 @@
+name: resource-yolov7
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - git
+  - pip:
+      - --extra-index-url https://download.pytorch.org/whl/cu124
+      - torch==2.6.0
+      - torchvision==0.21.0
+      - numpy==1.23.5          # YOLOv7 requirements: numpy<1.24
+      - opencv-python-headless<4.11
+      - matplotlib<3.9
+      - pyyaml
+      - requests
+      - scipy<1.12
+      - tqdm
+      - protobuf<4.21.3
+      - tensorboard<2.15
+      - pandas<2.1
+      - seaborn
+      - psutil
+      - thop
+      - scikit-learn
+      - azureml-mlflow

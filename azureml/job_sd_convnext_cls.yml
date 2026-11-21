@@ -1,0 +1,24 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+# ConvNeXt v1 Small 미세조정 (사용자 승인 2026-11-19 "H100으로 진행"). job_sd_dinov2_cls.yml 과 같은 데이터·분할·448px·15에폭·배치 64.
+# 가중치 convnext_small.fb_in22k_ft_in1k: Apache-2.0(timm 모델 카드), 코드 MIT(Meta ConvNeXt). ConvNeXt V2(CC BY-NC)는 쓰지 않음.
+type: command
+experiment_name: resource-predict-ai-vision
+code: ..
+compute: azureml:gpu-h100
+resources:
+  shm_size: 32g
+limits:
+  timeout: 7200  # 비용 상한 2시간 (사용자 승인 2026-11-19)
+display_name: resource-sd-convnext-small-e15
+description: 세션 비겹침 분할 ConvNeXt-Small 6클래스 448px 15에폭 (EfficientNet 대체·3모델 조합 비교용)
+environment: azureml:resource-yolov7@latest
+inputs:
+  data: {type: uri_folder, path: azureml:aihub-full-640:1, mode: download}
+  manifest: {type: uri_file, path: ../data/processed/aihub_full/manifest_sd.csv}
+outputs:
+  results: {type: uri_folder}
+command: >-
+  pip install -q "timm==1.0.15" "huggingface_hub==0.30.2" safetensors &&
+  python azureml/dino/run_dino_cls.py ${{inputs.data}} ${{outputs.results}} --manifest ${{inputs.manifest}}
+  --model convnext_small.fb_in22k_ft_in1k --epochs 15 --img 448 --batch 64 --workers 12
+  --lr 1e-4 --head-lr 1e-3 --layer-decay 0.8 --drop-path 0.2

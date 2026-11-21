@@ -1,0 +1,26 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+# YOLO11 분류 비교 실험 (사용자 승인 2026-11-11, A안). Ultralytics AGPL-3.0 - 내부 실험 전용, 코드·모델 공개/배포 금지(사용자 허락 전)
+# 실행: az ml job create -f azureml/job_yolo11_cls_h100.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+type: command
+display_name: resource-yolo11-cls-aihub-h100
+experiment_name: resource-predict-ai-vision
+description: AI-Hub 6클래스(부품 x 양품/불량) YOLO11s-cls / YOLO11m-cls - 448px, 30에폭, EfficientNet v3와 동일 분할
+code: ..
+environment: azureml:resource-ultralytics@latest
+compute: azureml:gpu-h100
+resources:
+  shm_size: 16g   # DataLoader 워커 공유 메모리(기본값 부족으로 Bus error 발생)
+inputs:
+  yolo_data:
+    type: uri_folder
+    path: ../data/processed/aihub/yolo
+outputs:
+  results:
+    type: uri_folder
+environment_variables:
+  TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD: "1"
+command: >-
+  pip uninstall -y -q opencv-python &&
+  pip install -q --force-reinstall --no-deps "opencv-python-headless<4.11" &&
+  python -c "import cv2; print('cv2', cv2.__version__)" &&
+  python azureml/yolo/run_yolo11_cls.py ${{inputs.yolo_data}} ${{outputs.results}} --models yolo11s-cls,yolo11m-cls --epochs 30 --img 448

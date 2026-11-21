@@ -1,0 +1,16 @@
+name: resource-predict-tabular
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - pandas==3.1.1
+      - numpy==2.4.6
+      - scipy==1.17.1
+      - scikit-learn==1.9.1
+      - xgboost==3.2.0
+      - joblib==1.6.0
+      - mlflow==3.18.0
+      - azureml-mlflow
+      - pypdf==7.0.0

@@ -1,0 +1,22 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+# DINOv2 ViT-B/14 미세조정 (사용자 요청 2026-11-18 "DINO도 YOLO11m처럼 학습"). job_sd_yolo11m_cls.yml 과 같은 데이터·분할·448px·15에폭·배치 64.
+type: command
+experiment_name: resource-predict-ai-vision
+code: ..
+compute: azureml:gpu-h100
+resources:
+  shm_size: 32g
+limits:
+  timeout: 7200  # 사용자 승인 2026-11-18(1차) · 2026-11-19(2차: 학습 곡선 지표 추가 기록) · 비용 상한 2시간
+display_name: resource-sd-dinov2-vitb14-e15-v2
+description: 세션 비겹침 분할 DINOv2 ViT-B/14 6클래스 448px 15에폭 (Apache-2.0)
+environment: azureml:resource-yolov7@latest
+inputs:
+  data: {type: uri_folder, path: azureml:aihub-full-640:1, mode: download}
+  manifest: {type: uri_file, path: ../data/processed/aihub_full/manifest_sd.csv}
+outputs:
+  results: {type: uri_folder}
+command: >-
+  pip install -q "timm==1.0.15" "huggingface_hub==0.30.2" safetensors &&
+  python azureml/dino/run_dino_cls.py ${{inputs.data}} ${{outputs.results}} --manifest ${{inputs.manifest}}
+  --epochs 15 --img 448 --batch 64 --workers 12

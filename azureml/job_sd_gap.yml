@@ -1,0 +1,18 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+# 세션 비겹침 재평가(사용자 승인 2026-11-14, 검출 모델 포함). 분할: ml/vision/resplit_session.py (촬영일 통째, 시험 6,946장·60초 이내 겹침 0%)
+type: command
+experiment_name: resource-predict-ai-vision
+code: ..
+compute: azureml:gpu-h100
+resources:
+  shm_size: 32g
+display_name: resource-sd-gap-effb0-e10
+description: 세션 비겹침 분할 휀더 단차 crop EfficientNet-B0 10에폭
+environment: azureml:resource-yolov7@latest
+inputs:
+  data: {type: uri_folder, path: azureml:aihub-gap-crops:1, mode: download}
+  manifest: {type: uri_file, path: ../data/processed/aihub_gap/manifest_sd.csv}
+outputs:
+  results: {type: uri_folder}
+command: >-
+  mkdir -p tmp && RESOURCE_GAP_MANIFEST=${{inputs.manifest}} python -m ml.vision.train_gap --data ${{inputs.data}} --out ${{outputs.results}} --epochs 10 --batch 64 --workers 8

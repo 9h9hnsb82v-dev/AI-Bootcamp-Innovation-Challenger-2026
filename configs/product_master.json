@@ -1,0 +1,107 @@
+{
+  "schema_version": "1.0",
+  "decision": "① B / ② B / ③ A",
+  "purpose": "DEMONSTRATION_ONLY; not measured component weights or real factory defect rates",
+  "modeling_policy": {
+    "kamp_preproduction_rate": "Compute from training portion of real KAMP data only; avoid leakage",
+    "aihub_rates": "DEMO_ASSUMED_RATE; never derive from image prevalence",
+    "independent_datasets": true,
+    "cross_dataset_join": "PROHIBITED",
+    "virtual_scenario_bridge": "DEMO_SYNTHETIC_BRIDGE"
+  },
+  "products": [
+    {
+      "product_id": "CN7_LH",
+      "display_name": "CN7 사이드 몰딩 LH",
+      "dataset_family": "KAMP",
+      "material_type": "PLASTIC",
+      "material_status": "DEMO_ASSUMED_PLASTIC",
+      "unit_weight_kg": 1.3,
+      "weight_source": "DEMO_SYNTHETIC",
+      "planned_defect_rate": null,
+      "rate_source": "KAMP_TRAIN_BASELINE",
+      "approved_by_user": true
+    },
+    {
+      "product_id": "CN7_RH",
+      "display_name": "CN7 사이드 몰딩 RH",
+      "dataset_family": "KAMP",
+      "material_type": "PLASTIC",
+      "material_status": "DEMO_ASSUMED_PLASTIC",
+      "unit_weight_kg": 1.35,
+      "weight_source": "DEMO_SYNTHETIC",
+      "planned_defect_rate": null,
+      "rate_source": "KAMP_TRAIN_BASELINE",
+      "approved_by_user": true
+    },
+    {
+      "product_id": "RG3_LH",
+      "display_name": "RG3 사이드 몰딩 LH",
+      "dataset_family": "KAMP",
+      "material_type": "PLASTIC",
+      "material_status": "DEMO_ASSUMED_PLASTIC",
+      "unit_weight_kg": 1.45,
+      "weight_source": "DEMO_SYNTHETIC",
+      "planned_defect_rate": null,
+      "rate_source": "KAMP_TRAIN_BASELINE",
+      "approved_by_user": true
+    },
+    {
+      "product_id": "RG3_RH",
+      "display_name": "RG3 사이드 몰딩 RH",
+      "dataset_family": "KAMP",
+      "material_type": "PLASTIC",
+      "material_status": "DEMO_ASSUMED_PLASTIC",
+      "unit_weight_kg": 1.5,
+      "weight_source": "DEMO_SYNTHETIC",
+      "planned_defect_rate": null,
+      "rate_source": "KAMP_TRAIN_BASELINE",
+      "approved_by_user": true
+    },
+    {
+      "product_id": "DOOR",
+      "display_name": "가상 플라스틱 도어",
+      "dataset_family": "AIHUB",
+      "material_type": "PLASTIC",
+      "material_status": "DEMO_ASSUMED_PLASTIC",
+      "unit_weight_kg": 5.0,
+      "weight_source": "DEMO_SYNTHETIC",
+      "planned_defect_rate": 0.015,
+      "rate_source": "DEMO_ASSUMED_RATE",
+      "approved_by_user": true
+    },
+    {
+      "product_id": "BUMPER",
+      "display_name": "가상 플라스틱 범퍼",
+      "dataset_family": "AIHUB",
+      "material_type": "PLASTIC",
+      "material_status": "DEMO_ASSUMED_PLASTIC",
+      "unit_weight_kg": 3.5,
+      "weight_source": "DEMO_SYNTHETIC",
+      "planned_defect_rate": 0.02,
+      "rate_source": "DEMO_ASSUMED_RATE",
+      "approved_by_user": true
+    },
+    {
+      "product_id": "FENDER",
+      "display_name": "가상 플라스틱 휀더",
+      "dataset_family": "AIHUB",
+      "material_type": "PLASTIC",
+      "material_status": "DEMO_ASSUMED_PLASTIC",
+      "unit_weight_kg": 2.8,
+      "weight_source": "DEMO_SYNTHETIC",
+      "planned_defect_rate": 0.025,
+      "rate_source": "DEMO_ASSUMED_RATE",
+      "approved_by_user": true
+    }
+  ],
+  "scope_policy": {
+    "service_version": "3.0",
+    "kamp_id4": true,
+    "kamp_id40_supply_forecast": true,
+    "aihub_vision": true,
+    "keco_manifest_analytics": false,
+    "supply_forecast_separate_from_7_products": true,
+    "production_plan_requires_manual_confirmation": true
+  }
+}

@@ -1,0 +1,20 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+# 휀더 단차 전용 DINOv2 (사용자 승인 2026-11-19). job_sd_gap.yml 과 같은 데이터·분할·자르기·448px·10에폭, 백본만 DINOv2.
+type: command
+experiment_name: resource-predict-ai-vision
+code: ..
+compute: azureml:gpu-h100
+limits:
+  timeout: 7200  # 사용자 승인 2026-11-19: 단차 DINO 비교 학습, 비용 상한 2시간
+resources:
+  shm_size: 32g
+display_name: resource-sd-gap-dinov2-vitb14-e10
+description: 세션 비겹침 분할 휀더 단차 crop DINOv2 ViT-B/14 10에폭 (Apache-2.0, EfficientNet 단차 모델과 같은 조건 비교)
+environment: azureml:resource-yolov7@latest
+inputs:
+  data: {type: uri_folder, path: azureml:aihub-gap-crops:1, mode: download}
+  manifest: {type: uri_file, path: ../data/processed/aihub_gap/manifest_sd.csv}
+outputs:
+  results: {type: uri_folder}
+command: >-
+  pip install -q "timm==1.0.15" "huggingface_hub==0.30.2" safetensors && mkdir -p tmp && RESOURCE_GAP_MANIFEST=${{inputs.manifest}} python -m ml.vision.train_gap --data ${{inputs.data}} --out ${{outputs.results}} --epochs 10 --batch 64 --workers 12 --backbone dino

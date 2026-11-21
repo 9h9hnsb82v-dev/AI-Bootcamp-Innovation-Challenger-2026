@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "purpose": "DEMONSTRATION_ONLY; not a legal limit or a real facility standard",
+  "provenance": "DEMO_ASSUMED",
+  "approved_by_user": true,
+  "approved_at": "2026-11-10",
+  "facility_id": "DEMO_WAREHOUSE_1",
+  "unit": "kg",
+  "max_capacity_kg": 1000.0,
+  "alert_ratio": 0.8,
+  "current_stock_kg": 300.0,
+  "collection_lead_time_days": 2,
+  "collection_weekdays": [0, 1, 2, 3, 4],
+  "collection_weekdays_note": "0=Mon ... 6=Sun (Mon-Fri)",
+  "collection_removes_all_stock": true
+}

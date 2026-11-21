@@ -1,0 +1,6 @@
+$schema: https://azuremlschemas.azureedge.net/latest/environment.schema.json
+name: resource-yolov7
+version: "1"
+description: YOLOv7(WongKinYiu, GPL-3.0, commit a207844) 시범 비교용 — 팀 VM .venv-yolo와 동일 버전(Python 3.11, torch 2.6 cu124, numpy 1.23.5)
+image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu22.04:latest
+conda_file: yolov7_conda.yml

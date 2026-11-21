@@ -1,0 +1,29 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+# EfficientNet-B0 전체 데이터 재학습 (사용자 요청 2026-11-13: 원본 전체 51,986장, 20에폭, 학습곡선 확인, 모델 조합 검증용 점수 저장)
+# 실행: az ml job create -f azureml/job_effnet_full_e20_h100.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+type: command
+display_name: resource-effnet-b0-full-e20-h100
+experiment_name: resource-predict-ai-vision
+description: AI-Hub 도어/범퍼/휀더 원본 전체(YOLO11m-cls full과 같은 분할) EfficientNet-B0 448px 20에폭
+code: ..
+environment: azureml:resource-yolov7@latest
+compute: azureml:gpu-h100
+resources:
+  shm_size: 32g
+inputs:
+  data:
+    type: uri_folder
+    path: azureml:aihub-full-640:1
+    mode: download
+outputs:
+  results:
+    type: uri_folder
+environment_variables:
+  RESOURCE_VISION_IMG: "448"
+  RESOURCE_VISION_TAG: "_full_e20"
+  RESOURCE_VISION_WORKERS: "8"
+  RESOURCE_VISION_MANIFEST: data/processed/aihub_full/manifest.csv
+command: >-
+  mkdir -p data/processed &&
+  ln -s ${{inputs.data}} data/processed/aihub_full &&
+  RESOURCE_VISION_OUT=${{outputs.results}} python -m ml.vision.train --epochs 20 --batch 32

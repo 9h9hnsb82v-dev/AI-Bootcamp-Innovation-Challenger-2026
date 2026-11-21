@@ -1,0 +1,23 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+# 1단계 부품 영역 분할 Mask R-CNN (사용자 승인 대기 - 학습 데이터 HITL CC0, 외부 검증 carparts-seg CC BY 4.0, 모델 torchvision BSD)
+# 실행: az ml job create -f azureml/job_partseg_h100.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+type: command
+display_name: resource-partseg-maskrcnn-h100-v2-cp-split821
+experiment_name: resource-predict-ai-vision
+description: 부품 분할 v2 - HITL 학습 + carparts-seg 절반(정답+의사라벨) 학습, 나머지 절반 외부 검증
+code: ..
+environment: azureml:resource-yolov7@latest
+compute: azureml:gpu-h100
+resources:
+  shm_size: 16g
+inputs:
+  partseg_data:
+    type: uri_folder
+    path: ../data/processed/partseg
+outputs:
+  results:
+    type: uri_folder
+command: >-
+  pip install -q --no-deps "pycocotools==2.0.8" &&
+  python -c "import pycocotools, torchvision; print('torchvision', torchvision.__version__)" &&
+  python -m ml.vision.train_partseg --data ${{inputs.partseg_data}} --out ${{outputs.results}} --epochs 30 --batch 8 --lr 0.02 --workers 8 --eval-every 3 --train-splits train,cp_train --ext-split ext_cp_holdout

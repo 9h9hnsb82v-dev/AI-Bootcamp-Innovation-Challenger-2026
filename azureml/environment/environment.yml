@@ -1,0 +1,6 @@
+$schema: https://azuremlschemas.azureedge.net/latest/environment.schema.json
+name: resource-predict-tabular
+version: "1"
+description: Re:Source Predict AI — KAMP ID4 / ID40 학습용 (Python 3.11, 로컬 requirements와 동일 버전)
+image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu22.04:latest
+conda_file: conda.yml

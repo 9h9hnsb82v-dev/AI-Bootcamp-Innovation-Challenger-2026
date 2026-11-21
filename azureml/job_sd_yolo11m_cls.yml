@@ -1,0 +1,20 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+# 세션 비겹침 재평가(사용자 승인 2026-11-14, 검출 모델 포함). 분할: ml/vision/resplit_session.py (촬영일 통째, 시험 6,946장·60초 이내 겹침 0%)
+type: command
+experiment_name: resource-predict-ai-vision
+code: ..
+compute: azureml:gpu-h100
+resources:
+  shm_size: 32g
+display_name: resource-sd-yolo11m-cls-e15
+description: 세션 비겹침 분할 YOLO11m-cls 448px 15에폭 (Ultralytics AGPL-3.0 내부 전용)
+environment: azureml:resource-ultralytics@latest
+inputs:
+  data: {type: uri_folder, path: azureml:aihub-full-640:1, mode: download}
+  manifest: {type: uri_file, path: ../data/processed/aihub_full/manifest_sd.csv}
+outputs:
+  results: {type: uri_folder}
+environment_variables: {TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD: "1"}
+command: >-
+  pip uninstall -y -q opencv-python && pip install -q --force-reinstall --no-deps "opencv-python-headless<4.11" &&
+  python azureml/yolo/run_yolo11_cls.py ${{inputs.data}} ${{outputs.results}} --models yolo11m-cls --epochs 15 --img 448 --batch 64 --manifest ${{inputs.manifest}}

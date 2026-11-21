@@ -1,0 +1,30 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+# KAMP ID4(불량률 기준선·센서 XGBoost) + KAMP ID40(수주량 baseline/HGB/XGB 시간순 백테스트)
+# 실행: az ml job create -f azureml/job_tabular.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+type: command
+display_name: resource-tabular-kamp4-kamp40
+experiment_name: resource-predict-ai
+description: 로컬과 동일한 코드·데이터·seed로 감사/학습/백테스트를 재현하고 models/·reports/를 출력으로 저장
+code: ..
+environment: azureml:resource-predict-tabular@latest
+compute: azureml:resource-cpu
+inputs:
+  kamp_zip:
+    type: uri_file
+    path: ../data/raw/kamp/04. Dataset_Molding.zip
+  id40_zip:
+    type: uri_file
+    path: ../data/raw/kamp_supply/Dataset_사출성형 공급망최적화 AI 데이터셋.zip
+outputs:
+  artifacts:
+    type: uri_folder
+command: >-
+  mkdir -p data/raw/kamp data/raw/kamp_supply &&
+  cp "${{inputs.kamp_zip}}" "data/raw/kamp/04. Dataset_Molding.zip" &&
+  cp "${{inputs.id40_zip}}" "data/raw/kamp_supply/Dataset_사출성형 공급망최적화 AI 데이터셋.zip" &&
+  python -m ml.supply.audit &&
+  python -m ml.kamp.audit &&
+  python -m ml.kamp.baseline &&
+  python -m ml.kamp.train_xgb &&
+  python -m ml.supply.train &&
+  cp -r models reports "${{outputs.artifacts}}/"

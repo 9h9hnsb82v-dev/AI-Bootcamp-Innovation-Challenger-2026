@@ -1,0 +1,23 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+# 휀더 단차 전용 이진 분류기 (사용자 요청 2026-11-13: 단차 부위를 원본 해상도로 잘라 학습, 상한/조준 오차/조각 탐색 3방식 평가)
+# 데이터 자산: az ml data create -n aihub-gap-crops -v 1 --type uri_folder --path data/processed/aihub_gap
+# 실행: az ml job create -f azureml/job_gap_effb0_h100.yml -w AIBIC_10_24_workspace -g stu_AIBIC2026_15_RG_EUS2
+type: command
+display_name: resource-gap-effb0-h100
+experiment_name: resource-predict-ai-vision
+description: AI-Hub 휀더 단차 사진(공식 Training 13,298 / Validation 1,663) 단차 부위 고해상도 crop EfficientNet-B0 이진 분류 448px 12에폭
+code: ..
+environment: azureml:resource-yolov7@latest
+compute: azureml:gpu-h100
+resources:
+  shm_size: 32g
+inputs:
+  data:
+    type: uri_folder
+    path: azureml:aihub-gap-crops:1
+    mode: download
+outputs:
+  results:
+    type: uri_folder
+command: >-
+  python -m ml.vision.train_gap --data ${{inputs.data}} --out ${{outputs.results}} --epochs 12 --batch 64 --workers 8

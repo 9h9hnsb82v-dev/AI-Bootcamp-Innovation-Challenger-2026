@@ -1,0 +1,56 @@
+# 추천안 · A 기본 + C 5단계 카드 — 슬레이트 + 녹색 강조, IBM Plex Sans KR. 밝은/어두운 모드 둘 다 정의(설정에서 전환).
+[theme]
+font = "'IBM Plex Sans KR':https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap"
+headingFontWeights = [700, 600, 600, 600, 500, 500]
+headingFontSizes = ["28px", "22px", "17px", "15px", "14px", "12px"]
+metricValueFontWeight = 700
+baseRadius = "8px"
+showSidebarBorder = true
+
+[theme.light]
+primaryColor = "#047857"
+backgroundColor = "#F8FAFC"
+secondaryBackgroundColor = "#F1F5F9"
+textColor = "#0F172A"
+linkColor = "#047857"
+borderColor = "#E2E8F0"
+redColor = "#DC2626"
+orangeColor = "#B45309"
+greenColor = "#047857"
+blueColor = "#334155"
+chartCategoricalColors = ["#334155", "#059669", "#B45309", "#DC2626", "#64748B", "#0E7490", "#94A3B8"]
+dataframeHeaderBackgroundColor = "#F1F5F9"
+
+[theme.light.sidebar]
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F1F5F9"
+textColor = "#0F172A"
+linkColor = "#047857"
+borderColor = "#E2E8F0"
+primaryColor = "#047857"
+codeTextColor = "#0F172A"
+codeBackgroundColor = "#F1F5F9"
+
+[theme.dark]
+primaryColor = "#059669"
+backgroundColor = "#0B1220"
+secondaryBackgroundColor = "#152033"
+textColor = "#E2E8F0"
+linkColor = "#34D399"
+borderColor = "#24324A"
+redColor = "#F87171"
+orangeColor = "#FBBF24"
+greenColor = "#34D399"
+blueColor = "#94A3B8"
+chartCategoricalColors = ["#94A3B8", "#34D399", "#FBBF24", "#F87171", "#CBD5E1", "#22D3EE", "#64748B"]
+dataframeHeaderBackgroundColor = "#152033"
+
+[theme.dark.sidebar]
+backgroundColor = "#0F172A"
+secondaryBackgroundColor = "#152033"
+textColor = "#E2E8F0"
+linkColor = "#34D399"
+borderColor = "#24324A"
+primaryColor = "#059669"
+codeTextColor = "#E2E8F0"
+codeBackgroundColor = "#152033"

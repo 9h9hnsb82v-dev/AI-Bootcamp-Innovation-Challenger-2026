@@ -1,0 +1,36 @@
+# 테이스트안 · design-taste-frontend (white-mint-tiles) — 흰 바탕, 짙은 회색 글자, 강조색 민트 하나.
+# 글꼴: Geist(라틴·숫자) + Noto Sans KR(한글) + Geist Mono(숫자). 세 글꼴은 f.css 의 @import 로 불러온다
+# (Streamlit 글꼴 설정은 URL 하나에 글꼴 하나만 받기 때문).
+[theme]
+base = "light"
+font = "Geist, 'Noto Sans KR', sans-serif"
+headingFont = "Geist, 'Noto Sans KR', sans-serif"
+codeFont = "'Geist Mono', monospace"
+headingFontWeights = [500, 500, 500, 500, 500, 500]
+headingFontSizes = ["40px", "28px", "22px", "17px", "15px", "13px"]
+metricValueFontWeight = 500
+primaryColor = "#232323"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f3f3f3"
+textColor = "#232323"
+linkColor = "#232323"
+linkUnderline = true
+borderColor = "#e6e6e6"
+baseRadius = "10px"
+showSidebarBorder = true
+redColor = "#c2410c"
+orangeColor = "#b45309"
+greenColor = "#15803d"
+blueColor = "#4a4a4a"
+chartCategoricalColors = ["#232323", "#a1ffcb", "#9a9a9a", "#5b5b5b", "#cfcfcf", "#4a4a4a", "#dcdcdc"]
+dataframeHeaderBackgroundColor = "#f3f3f3"
+
+[theme.sidebar]
+backgroundColor = "#f3f3f3"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#232323"
+linkColor = "#232323"
+borderColor = "#e6e6e6"
+primaryColor = "#232323"
+codeTextColor = "#232323"
+codeBackgroundColor = "#ffffff"

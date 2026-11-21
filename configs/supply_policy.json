@@ -1,0 +1,25 @@
+{
+  "policy_version": "3.0",
+  "source_dataset": "KAMP_ID_40",
+  "dataset_display_name": "사출성형 공급망 최적화 AI 데이터셋",
+  "target_column": "T일 예정 수주량",
+  "target_semantics": "PLANNED_ORDER_QUANTITY_NOT_REALIZED_ORDERS",
+  "native_product_key": "Product_Number",
+  "expected_native_product_count_prior_audit": 117,
+  "forbid_native_product_to_7_product_automatic_join": true,
+  "forbid_demand_forecast_to_waste_kg_direct_conversion": true,
+  "demo_bridge_requires_user_selected_target_product": true,
+  "demo_bridge_requires_quantity_review": true,
+  "demo_bridge_requires_final_plan_confirmation": true,
+  "demo_bridge_provenance": "DEMO_SYNTHETIC_BRIDGE",
+  "inference_requirements": {
+    "as_of_feature_availability_check": true,
+    "no_future_feature_leakage": true,
+    "historical_backtest_as_default": true
+  },
+  "excluded_modules": [
+    "KECO_SYNTHETIC_MANIFEST",
+    "REGIONAL_WASTE_HANDOVER",
+    "TREATMENT_METHOD_ANALYTICS"
+  ]
+}
