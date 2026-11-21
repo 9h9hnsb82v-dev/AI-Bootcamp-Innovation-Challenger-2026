@@ -1,0 +1,108 @@
+{
+  "provenance": "KAMP_TRAIN_BASELINE",
+  "method": "JEFFREYS_POSTERIOR_MEAN",
+  "unit_of_count": "deduplicated _id record (one shot log)",
+  "label_mapping": {
+    "Y": "PASS",
+    "N": "DEFECT"
+  },
+  "split_rule": "per-product day-based chronological; days starting before cumulative 70% = train",
+  "source_zip": "data\\raw\\kamp\\04. Dataset_Molding.zip",
+  "created_at": "2026-11-09T16:48:37+00:00",
+  "products": {
+    "CN7_LH": {
+      "estimated_defect_rate": 0.00623768877216021,
+      "raw_rate": 0.005913272010512484,
+      "ci95_low": 0.002929824833264313,
+      "ci95_high": 0.010764396460165804,
+      "train_n": 1522,
+      "train_defects": 9,
+      "train_dates": [
+        "2020-10-16",
+        "2020-10-19",
+        "2020-10-20",
+        "2020-10-27",
+        "2020-10-29",
+        "2020-10-30"
+      ],
+      "holdout_n": 463,
+      "holdout_defects": 1,
+      "holdout_raw_rate": 0.0021598272138228943,
+      "holdout_dates": [
+        "2020-11-03"
+      ],
+      "warnings": []
+    },
+    "CN7_RH": {
+      "estimated_defect_rate": 0.012115258677144728,
+      "raw_rate": 0.011795543905635648,
+      "ci95_low": 0.007258367942903984,
+      "ci95_high": 0.018178047701871983,
+      "train_n": 1526,
+      "train_defects": 18,
+      "train_dates": [
+        "2020-10-16",
+        "2020-10-19",
+        "2020-10-20",
+        "2020-10-27",
+        "2020-10-29",
+        "2020-10-30"
+      ],
+      "holdout_n": 463,
+      "holdout_defects": 0,
+      "holdout_raw_rate": 0.0,
+      "holdout_dates": [
+        "2020-11-03"
+      ],
+      "warnings": []
+    },
+    "RG3_LH": {
+      "estimated_defect_rate": 0.0008445945945945946,
+      "raw_rate": 0.0,
+      "ci95_low": 8.305020055394503e-07,
+      "ci95_high": 0.00423951629958479,
+      "train_n": 591,
+      "train_defects": 0,
+      "train_dates": [
+        "2020-10-21",
+        "2020-10-22",
+        "2020-10-23"
+      ],
+      "holdout_n": 37,
+      "holdout_defects": 5,
+      "holdout_raw_rate": 0.13513513513513514,
+      "holdout_dates": [
+        "2020-11-04",
+        "2020-11-05",
+        "2020-11-06"
+      ],
+      "warnings": [
+        "ZERO_DEFECT_IN_TRAIN",
+        "SMALL_SAMPLE"
+      ]
+    },
+    "RG3_RH": {
+      "estimated_defect_rate": 0.04307432432432432,
+      "raw_rate": 0.04230118443316413,
+      "ci95_low": 0.028246642368585217,
+      "ci95_high": 0.06081914192186227,
+      "train_n": 591,
+      "train_defects": 25,
+      "train_dates": [
+        "2020-10-21",
+        "2020-10-22",
+        "2020-10-23"
+      ],
+      "holdout_n": 37,
+      "holdout_defects": 2,
+      "holdout_raw_rate": 0.05405405405405406,
+      "holdout_dates": [
+        "2020-11-04",
+        "2020-11-05"
+      ],
+      "warnings": [
+        "SMALL_SAMPLE"
+      ]
+    }
+  }
+}

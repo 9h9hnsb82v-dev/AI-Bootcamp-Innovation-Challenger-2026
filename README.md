@@ -3,9 +3,12 @@
 > **대회 제출용 공개 저장소** — AI Bootcamp Innovation Challenger 2026 · 계명대학교 AICD
 >
 > - **라이선스:** [GNU AGPL-3.0](LICENSE). 결함 위치 박스 표시에 쓰는 [Ultralytics YOLO11](https://github.com/ultralytics/ultralytics)(AGPL-3.0)에 맞춰 이 저장소 전체를 AGPL-3.0으로 공개합니다.
-> - **포함하지 않은 것:** 학습·평가 데이터(AI-Hub 자동차 부품 품질검사 영상, KAMP 데이터 — 각 기관 이용약관상 재배포 불가), 학습된 모델 가중치, 챗봇 문서 원문, 비밀 설정(`secrets.toml`). 이 파일들이 없으면 이미지 판정은 `MODEL_NOT_READY`로 표시되고 나머지 화면은 동작합니다.
+> - **포함한 모델:** `models/kamp`(KAMP 학습 구간 불량률 집계·센서 모델), `models/supply`(수주량 모델·성능 지표). 그래서 내려받은 그대로도 생산계획 등록 → 폐기물 kg 예측 → 보관·수거 추천 → 처리업체 추천이 동작합니다.
+> - **포함하지 않은 것:** 학습·평가 데이터(AI-Hub 자동차 부품 품질검사 영상, KAMP 원본 — 각 기관 이용약관상 재배포 불가), AI-Hub로 학습한 이미지 모델 가중치(약관 확인 중), 실제 수주량이 담긴 백테스트 결과, 챗봇 문서 원문, 비밀 설정(`secrets.toml`).
+>   - 이미지 판정·부품 위치 찾기 → `MODEL_NOT_READY` 표시
+>   - 미래 수주량 예측 → KAMP ID40 원본(`data/raw`)이 있어야 동작 (KAMP에서 직접 내려받기)
+>   - 이미지 판정까지 포함한 완성본은 발표 자료의 **공개 주소(QR)**에서 바로 체험할 수 있습니다.
 > - README 본문의 `MASTER_PROMPT.md`, `reports/…` 링크는 이 공개본에 포함되지 않은 내부 문서를 가리킵니다.
-> - 체험: 발표 자료의 공개 주소(QR)에서 웹앱을 직접 써 볼 수 있습니다.
 
 확정 생산계획 기반 폐플라스틱 발생량(kg) 예측, 이미지 검사 후 예측 갱신, 보관·수거 일정 추천을 한 서비스로 묶었다. 여기에 독립 기능으로 KAMP ID 40 미래 수주량 예측을 붙였다.
 최상위 사양은 [MASTER_PROMPT.md](MASTER_PROMPT.md)다. 한국환경공단 인계서 분석은 범위에서 제외했다([reports/migration_review.md](reports/migration_review.md)).

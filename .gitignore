@@ -1,6 +1,9 @@
 /data/raw/
 /data/processed/
-/models/
+/models/*
+!/models/kamp/
+!/models/supply/
+/models/supply/**/backtest_predictions.csv
 /mlruns/
 .venv/
 .env
