@@ -64,7 +64,9 @@ def _demo_admin() -> None:
 
 def run(root: Path, design: str) -> None:
     inject_css(design)
-    st.logo(str(Path(__file__).with_name(f"{design}_logo.svg")), size="large")
+    here = Path(__file__)
+    logo = here.with_name(f"{design}_logo.png")  # f: Loop:in 로고(2026-11-22 이름 변경), 없으면 기존 SVG
+    st.logo(str(logo if logo.exists() else here.with_name(f"{design}_logo.svg")), size="large")
     nav = st.navigation(_pages(root / "ui/pages", design), position="sidebar" if design == "d" else "top")
     with st.sidebar:
         _period()

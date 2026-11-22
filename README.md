@@ -1,4 +1,4 @@
-# Re:Source Predict AI v3.0
+# Loop:in (구 Re:Source Predict AI) v3.0
 
 > **대회 제출용 공개 저장소** — AI Bootcamp Innovation Challenger 2026 
 >

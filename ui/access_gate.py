@@ -50,7 +50,7 @@ def require_password() -> None:
     ss = st.session_state
     if not (visitor or presenter) or ss.get("_access_ok"):
         return
-    st.markdown("## Re:Source Predict AI")
+    st.markdown("## Loop:in")
     st.caption("대회 시연용 주소입니다. 안내받은 접속 비밀번호를 입력하세요.")
     locked_until = ss.get("_access_locked_until", 0.0)
     if time.time() < locked_until:

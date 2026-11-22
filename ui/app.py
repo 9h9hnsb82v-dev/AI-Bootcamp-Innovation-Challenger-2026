@@ -8,7 +8,7 @@ if str(ROOT) not in sys.path:
 
 import streamlit as st  # noqa: E402
 
-st.set_page_config(page_title="Re:Source Predict AI", page_icon="♻️", layout="wide")
+st.set_page_config(page_title="Loop:in", page_icon="♻️", layout="wide")  # 이름 변경 Re:Source → Loop:in (2026-11-22)
 
 from ui.access_gate import require_password  # noqa: E402
 
@@ -46,7 +46,7 @@ pages = [
 ]
 with st.sidebar:
     from datetime import date as _date
-    st.markdown("**Re:Source Predict AI** v3.0")
+    st.markdown("**Loop:in** v3.0")
     st.caption("생산계획 기반 폐플라스틱(kg) 사전예측 → 이미지 검사 갱신 → 보관·수거 최적화")
     # 앱 전체 공통 기준(사용자 요청 2026-11-14, 팀원 앱 반영): 보관량·수거·배치도 화면이 이 값을 쓴다
     from datetime import timedelta as _td
