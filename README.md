@@ -9,10 +9,9 @@
 >   - 미래 수주량 예측 → KAMP ID40 원본(`data/raw`)이 있어야 동작 (KAMP에서 직접 내려받기)
 >   - 처리업체 추천 → 공공데이터포털 '전국폐기물처리업소표준데이터' CSV를 `data/raw/waste_processors/`에 넣어야 동작
 >   - 이미지 판정까지 포함한 완성본은 발표 자료의 **공개 주소(QR)**에서 바로 체험할 수 있습니다.
-> - README 본문의 `MASTER_PROMPT.md`, `reports/…` 링크는 이 공개본에 포함되지 않은 내부 문서를 가리킵니다.
 
 확정 생산계획 기반 폐플라스틱 발생량(kg) 예측, 이미지 검사 후 예측 갱신, 보관·수거 일정 추천을 한 서비스로 묶었다. 여기에 독립 기능으로 KAMP ID 40 미래 수주량 예측을 붙였다.
-최상위 사양은 [MASTER_PROMPT.md](MASTER_PROMPT.md)다. 한국환경공단 인계서 분석은 범위에서 제외했다([reports/migration_review.md](reports/migration_review.md)).
+최상위 사양은 팀 내부 문서(`MASTER_PROMPT.md`, 공개본 미포함)로 관리했다. 한국환경공단 인계서 분석은 범위에서 제외했다.
 
 ## 빠른 시작 (Windows, Python 3.11)
 ```powershell
