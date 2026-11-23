@@ -2,7 +2,6 @@
 
 > **대회 제출용 공개 저장소** — AI Bootcamp Innovation Challenger 2026 
 >
-> - **라이선스:** [GNU AGPL-3.0](LICENSE). 결함 위치 박스 표시에 쓰는 [Ultralytics YOLO11](https://github.com/ultralytics/ultralytics)(AGPL-3.0)에 맞춰 이 저장소 전체를 AGPL-3.0으로 공개합니다.
 > - **포함한 모델:** `models/kamp`(KAMP 학습 구간 불량률 집계·센서 모델), `models/supply`(수주량 모델·성능 지표). 그래서 내려받은 그대로도 생산계획 등록 → 폐기물 kg 예측 → 보관량 예측·수거 추천이 동작합니다.
 > - **포함하지 않은 것:** 학습·평가 데이터(AI-Hub 자동차 부품 품질검사 영상, KAMP 원본 — 각 기관 이용약관상 재배포 불가), AI-Hub로 학습한 이미지 모델 가중치(약관 확인 중), 실제 수주량이 담긴 백테스트 결과, 챗봇 문서 원문, 비밀 설정(`secrets.toml`).
 >   - 이미지 판정·부품 위치 찾기 → `MODEL_NOT_READY` 표시
