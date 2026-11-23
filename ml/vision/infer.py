@@ -86,9 +86,8 @@ def status(b: str | None = None) -> dict:
     if not (w.exists() and m.exists()):
         return {"status": "MODEL_NOT_READY", "backend": b, "message": f"이미지 모델 파일 없음: {w.name}"}
     meta = json.loads(m.read_text(encoding="utf-8"))
-    if _kind(b) == "yolo" and not _has("ultralytics"):
-        return {"status": "MODEL_NOT_READY", "backend": b,
-                "message": "ultralytics 미설치: pip install -r requirements-yolo11.txt (AGPL-3.0, 내부 전용)"}
+    if _kind(b) == "yolo":  # 공개본: YOLO11(Ultralytics) 코드는 포함하지 않음
+        return {"status": "MODEL_NOT_READY", "backend": b, "message": "YOLO11 백엔드는 공개본에 포함하지 않았습니다"}
     if _kind(b) == "dino" and not _has("timm"):
         return {"status": "MODEL_NOT_READY", "backend": b, "message": "timm 미설치: pip install timm==1.0.15 (Apache-2.0)"}
     return {"status": "OK", "backend": b, "model_version": meta["model_version"],
@@ -108,15 +107,7 @@ def _load(b: str):
     dev = _device()
     w_path, m_path = _files(b)
     if _kind(b) == "yolo":
-        os.environ.setdefault("YOLO_OFFLINE", "1")
-        from ultralytics import YOLO, settings
-        settings.update({"sync": False, "hub": False, "mlflow": False})  # 외부 사용 통계 전송 끔
-        y = YOLO(str(w_path))
-        m = y.model.float().eval().to(dev)
-        tf = m.transforms  # 학습 때 저장된 전처리(Resize 448 → CenterCrop 448 → ToTensor), Azure 점수와 일치 확인
-        names = [y.names[i] for i in range(len(y.names))]
-        layer = m.model[-1].conv  # Classify head 1x1 conv 출력(1280ch, 14x14)
-        meta = json.loads(m_path.read_text(encoding="utf-8"))
+        raise RuntimeError("YOLO11 백엔드는 공개본에 포함하지 않았습니다")
     elif _kind(b) == "dino":
         import timm
         from torchvision import transforms
@@ -403,30 +394,9 @@ DET_NAMES_KO = {"scratch": "스크래치", "exterior_damage": "외관 손상", "
 
 
 def det_ready() -> bool:
-    return DET_WEIGHTS.exists() and DET_META.exists() and _has("ultralytics")
-
-
-@lru_cache(maxsize=1)
-def _load_det():
-    os.environ.setdefault("YOLO_OFFLINE", "1")
-    from ultralytics import YOLO, settings
-    settings.update({"sync": False, "hub": False, "mlflow": False})
-    meta = json.loads(DET_META.read_text(encoding="utf-8"))
-    return YOLO(str(DET_WEIGHTS)), meta
+    return False  # 공개본: YOLO11 결함 위치 검출은 포함하지 않음
 
 
 def detect_defects(image_bytes: bytes) -> list[dict] | None:
     """결함 위치 박스 [{name, name_ko, conf, xyxyn}] (meta의 표시 클래스·신뢰도 기준 이상만). 모델 없으면 None."""
-    if not det_ready():
-        return None
-    model, meta = _load_det()
-    img = open_oriented(image_bytes, 1280)
-    res = model.predict(img, imgsz=meta.get("img", 640), conf=min(meta["conf"].values()), verbose=False, device="cpu")[0]
-    names = meta["names"]
-    out = []
-    for c, s, b in zip(res.boxes.cls.tolist(), res.boxes.conf.tolist(), res.boxes.xyxyn.tolist()):
-        n = names[int(c)]
-        if n in meta["conf"] and s >= meta["conf"][n]:
-            out.append({"name": n, "name_ko": DET_NAMES_KO.get(n, n), "conf": round(float(s), 3),
-                        "xyxyn": [round(float(v), 4) for v in b]})
-    return out
+    return None

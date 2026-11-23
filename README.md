@@ -16,7 +16,6 @@
 ```powershell
 py -3.11 -m venv .venv
 .venv\Scripts\python -m pip install -r requirements.txt   # torch는 requirements 주석의 CUDA 인덱스 사용
-.venv\Scripts\python -m pip install --no-deps -r requirements-yolo11.txt   # 근접 사진 판정 YOLO11(AGPL-3.0, 내부 전용). 없으면 MODEL_NOT_READY
 # 1) 데이터 감사
 .venv\Scripts\python -m ml.supply.audit          # reports/audit/kamp_id40_audit.json
 .venv\Scripts\python -m ml.kamp.audit            # reports/audit/kamp_id4_audit.json
@@ -56,7 +55,7 @@ Ollama(선택): 기본 모델 `benedict/linkbricks-llama3.1-korean:8b`(평가 8�
 **모델 다시 만들기**
 - KAMP 불량률·수주량: 저장소에 포함(`models/kamp`, `models/supply`). 다시 만들려면 `python -m ml.kamp.baseline`, `python -m ml.supply.train`.
 - 이미지 판정(EfficientNet-B0 + DINOv2 + 2차 판정): 세션 비겹침 분할 `python -m ml.vision.resplit_session` → 학습 작업 `azureml/job_sd_effnet.yml`, `azureml/job_sd_dinov2_cls.yml`, `azureml/job_sd_gap.yml`, `azureml/job_sd_gap_dinov2.yml` → 조합 `python -m ml.vision.fit_dino_ensemble`, `python -m ml.vision.fit_gap_dino` → `models/vision/ensemble_sd_dino/`.
-- 결함 위치 박스(YOLO11 검출): `azureml/job_sd_det.yml` → `models/vision/yolo11m_det/`.
+- 결함 위치 박스(YOLO11 검출): 공개본에는 학습·추론 코드를 포함하지 않았습니다(Ultralytics AGPL-3.0).
 - 부품 위치(Mask R-CNN): `python -m ml.vision.prepare_partseg` → `azureml/job_partseg_h100_v2.yml` → `models/vision/partseg/`.
 - Azure ML 작업 파일의 `<workspace>`, `<resource-group>`은 각자의 작업 공간으로 바꿔 실행합니다.
 

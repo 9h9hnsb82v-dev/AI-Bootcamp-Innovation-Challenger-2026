@@ -1,6 +1,0 @@
-$schema: https://azuremlschemas.azureedge.net/latest/environment.schema.json
-name: resource-ultralytics
-version: "1"
-description: YOLO11 분류 비교 실험용 (Ultralytics 8.3.40, AGPL-3.0 - 내부 실험 전용, 배포 금지) Python 3.11, torch 2.5.1 cu124
-image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu22.04:latest
-conda_file: ultralytics_conda.yml
