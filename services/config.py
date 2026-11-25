@@ -33,11 +33,27 @@ def supply_policy() -> dict:
     return _load("supply_policy.json")
 
 
-def facility() -> dict:
+def facility_base() -> dict:
+    """승인된 가상 창고 정책 원본(configs/facility_demo.json)."""
     p = CONFIG_DIR / "facility_demo.json"
     if not p.exists():
         raise ServiceError("POLICY_NOT_APPROVED", "configs/facility_demo.json 없음")
     return _load("facility_demo.json")
+
+
+def facility() -> dict:
+    """창고 정책. 용량(max_capacity_kg)은 공장 배치도의 폐플라스틱 보관함 용량 합계(2026-11-25 사용자 결정).
+    배치에 보관함이 없거나 배치를 읽을 수 없으면 원본 값(1,000kg)."""
+    fac = dict(facility_base())
+    try:
+        from services.factory_layout import bins
+        caps = [b["capacity_kg"] for b in bins()]
+    except Exception:  # noqa: BLE001 - DB 없음(설정만 쓰는 도구 등) → 원본 용량
+        caps = []
+    if caps:
+        fac["max_capacity_kg"] = float(sum(caps))
+        fac["capacity_source"] = "FACTORY_LAYOUT_BINS"
+    return fac
 
 
 def products() -> dict[str, dict]:

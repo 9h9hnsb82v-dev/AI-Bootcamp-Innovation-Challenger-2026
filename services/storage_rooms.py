@@ -1,6 +1,7 @@
 """보관창고 방별 적재 예측 (사용자 요청 2026-11-14: 팀원 앱 '방별 적재 모습' 예시 반영).
 
-- 방 구성(가상, DEMO_ASSUMED): A실 CN7 몰딩 350kg · B실 RG3 몰딩 300kg · C실 도어·범퍼·휀더 350kg (합 = 창고 용량 1,000kg)
+- 방 구성(가상, DEMO_ASSUMED): A실 CN7 몰딩 350kg · B실 RG3 몰딩 300kg · C실 도어·범퍼·휀더 350kg (합 1,000kg).
+  창고 용량(보관함 용량 합계)이 바뀌면 같은 비율(35:30:35)로 방 용량을 늘리거나 줄인다(2026-11-25).
 - 품목이 있는 발생량(확정 폐기 장부, 생산계획의 남은 예상 kg)은 해당 방에, 품목 정보가 없는
   시연 기준 보관량·수거·조정은 방 용량 비율로 나눈다. 방별 합계 = 전체 보관량 예측(storage_projection)과 같다.
 - 방별 경고선 = 방 용량 x 경보 비율(80%). 그림은 포대 1개 = 25kg, 칸 하나에 최대 2단(= 50kg)으로 무게를 칸으로 환산한 것이며
@@ -32,8 +33,10 @@ def room_projection(start_date: str | None = None, days: int = 14) -> dict:
     start = date.fromisoformat(start_date) if start_date else date.today()
     end = start + timedelta(days=days - 1)
     fac = facility()
-    total_cap = sum(r["capacity_kg"] for r in ROOMS)
-    share = {r["id"]: r["capacity_kg"] / total_cap for r in ROOMS}
+    k = float(fac["max_capacity_kg"]) / sum(r["capacity_kg"] for r in ROOMS)
+    rooms_ = [{**r, "capacity_kg": round(r["capacity_kg"] * k, 1)} for r in ROOMS]
+    total_cap = sum(r["capacity_kg"] for r in rooms_)
+    share = {r["id"]: r["capacity_kg"] / total_cap for r in rooms_}
     stock = {k: float(fac["current_stock_kg"]) * v for k, v in share.items()}
     flow: dict[date, dict[str, float]] = {}
 
@@ -64,14 +67,14 @@ def room_projection(start_date: str | None = None, days: int = 14) -> dict:
         for k in s:
             s[k] = max(s[k] + flow.get(d, {}).get(k, 0.0), 0.0)
         rooms = {}
-        for r in ROOMS:
+        for r in rooms_:
             kgv, cap = s[r["id"]], r["capacity_kg"]
             ratio = kgv / cap
             state = "초과" if kgv > cap else "경고" if ratio >= alert_ratio else "정상"
             rooms[r["id"]] = {"kg": round(kgv, 1), "ratio": ratio, "state": state,
                               "overflow_kg": round(max(kgv - cap, 0.0), 1)}
         out.append({"date": d.isoformat(), "rooms": rooms, "total_kg": round(sum(s.values()), 1)})
-    return {"rooms": ROOMS, "days": out, "alert_ratio": alert_ratio, "bag_kg": BAG_KG, "stack": STACK,
+    return {"rooms": rooms_, "days": out, "alert_ratio": alert_ratio, "bag_kg": BAG_KG, "stack": STACK,
             "provenance": ["DEMO_ASSUMED", "DEMO_SYNTHETIC_WEIGHT"],
             "note": "방 구성·용량은 가정값. 품목 없는 기준 보관량·수거는 방 용량 비율로 배분. 포대 1개 = 25kg, 최대 2단."}
 

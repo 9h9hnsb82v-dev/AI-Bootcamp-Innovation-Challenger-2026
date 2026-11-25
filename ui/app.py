@@ -61,7 +61,9 @@ with st.sidebar:
         st.caption("⚠️ 최대 30일까지만 계산합니다.")
     st.session_state["as_of"], st.session_state["horizon"] = _s, _days  # 각 화면이 읽는 공통 값
     st.caption(f"{_s} ~ {_s + _td(days=_days - 1)} · {_days}일")
-    st.warning("보관창고 설정: 승인된 가상값 · 용량 1,000kg · 기준 보관량 300kg · 리드타임 2일", icon=None)
+    from services.config import facility as _fac
+    st.warning(f"보관창고 설정: 승인된 가상값 · 용량 {_fac()['max_capacity_kg']:,.0f}kg(공장 배치도 보관함 합계) · "
+               "기준 보관량 300kg · 리드타임 2일", icon=None)
     st.caption("모든 단중·시연 불량률·창고 정책은 사용자 승인 가상값입니다. 실측·법령 기준이 아닙니다.")
     with st.expander("시연 데이터 관리"):
         from services import db as _db

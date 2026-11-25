@@ -1,9 +1,9 @@
 """공장 배치도 컴포넌트 (Streamlit Custom Components v2, 추가 Python 패키지 없음).
 
 - 2D 편집: SVG 평면도. 구역을 끌어서 옮기기, 오른쪽 아래 손잡이로 크기 조절, 회전(15° 단위/직접 입력), 구역 추가·삭제, 이름·종류 변경.
-  0.5m 격자에 맞춘다. 편집 내용은 '저장'을 눌러야 DB에 남는다(작업자 ID별).
+  0.5m 격자에 맞춘다. 편집 내용은 '저장'을 눌러야 DB에 남는다(공장 배치 하나).
 - 3D 보기: three.js(브라우저가 cdn.jsdelivr.net에서 불러옴). 마우스 끌기 = 회전, 휠 = 확대/축소, 오른쪽 버튼 끌기 = 이동.
-  폐플라스틱 보관함 높이·색 = 현재 보관량 / 용량(시연 기준값).
+  폐플라스틱 보관함 높이·색 = 보관함별 보관량 / 보관함 용량. 쌓인 양은 배치 순서대로 앞 보관함을 100%까지 채운 뒤 다음으로(binFill).
 트리거: save(배치 JSON), reset(true)
 """
 from __future__ import annotations
@@ -31,6 +31,7 @@ _HTML = """
     <label class="lab">가로(m) <input id="eW" type="number" step="0.5" min="0.5"></label>
     <label class="lab">세로(m) <input id="eH" type="number" step="0.5" min="0.5"></label>
     <label class="lab">회전(°) <input id="eRot" type="number" step="15"></label>
+    <label class="lab" id="eCapWrap">용량(kg) <input id="eCap" type="number" step="100" min="1" max="100000"></label>
     <button id="rl" type="button" aria-label="왼쪽으로 15도 회전">⟲ 15°</button>
     <button id="rr" type="button" aria-label="오른쪽으로 15도 회전">⟳ 15°</button>
     <button id="del" type="button" class="danger">삭제</button>
@@ -47,7 +48,7 @@ _CSS = """
 .fl { display: flex; flex-direction: column; gap: 0.6rem; font-family: var(--st-font, sans-serif); color: var(--st-text-color); }
 .bar, .edit { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
 .edit { padding: 0.5rem 0.6rem; border: 1px solid var(--st-border-color, #3a3f4b); border-radius: 0.5rem; }
-.edit[hidden], .three[hidden] { display: none; }
+.edit[hidden], .three[hidden], .lab[hidden] { display: none; }
 .sp { flex: 1; }
 .lab { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.85rem; }
 button, select, input { min-height: 2.5rem; border-radius: 0.45rem; border: 1px solid var(--st-border-color, #cbd5e1);
@@ -82,6 +83,19 @@ export default function (component) {
   if (!svg) return
   const L = s.layout
 
+  const DEF_CAP = 1000
+  const binFill = () => {  // 앞 보관함 100% → 다음 보관함. 전체 용량을 넘는 양은 마지막 보관함에(초과)
+    const out = {}, list = L.items.filter((i) => i.type === "scrap_bin")
+    if (!d.live || d.live.scrap_kg == null) return out
+    let left = Math.max(0, d.live.scrap_kg)
+    list.forEach((b, n) => { const cap = Number(b.capacity_kg) || DEF_CAP, k = Math.min(left, cap); left -= k; out[b.id] = { kg: k, cap, n: n + 1 } })
+    if (list.length && left > 0) out[list[list.length - 1].id].kg += left
+    Object.values(out).forEach((o) => { o.fill = o.kg / o.cap })
+    return out
+  }
+  const alertRatio = () => (d.live && d.live.alert_ratio) || 0.8
+  const binColor = (f) => f >= alertRatio() ? "#e5484d" : f >= 0.5 ? "#f5a524" : "#22a06b"
+  const totalCap = () => L.items.filter((i) => i.type === "scrap_bin").reduce((a, b) => a + (Number(b.capacity_kg) || DEF_CAP), 0)
   const say = (msg) => { status.textContent = msg || (s.dirty ? "저장하지 않은 변경이 있습니다." : (d.notice || "")) }
   const fillSel = (sel, val) => {
     if (!sel.options.length) types.forEach((t) => { const o = document.createElement("option"); o.value = t.type; o.textContent = t.name; sel.appendChild(o) })
@@ -94,6 +108,7 @@ export default function (component) {
   const draw2d = () => {
     svg.setAttribute("viewBox", `-2 -2 ${L.width_m + 4} ${L.height_m + 4}`)
     svg.textContent = ""
+    const bf = binFill()
     const floor = document.createElementNS(NS, "rect")
     Object.entries({ x: 0, y: 0, width: L.width_m, height: L.height_m, fill: "rgba(148,163,184,0.12)", stroke: "#94a3b8", "stroke-width": 0.3 }).forEach(([k, v]) => floor.setAttribute(k, v))
     svg.appendChild(floor)
@@ -111,13 +126,20 @@ export default function (component) {
       const r = document.createElementNS(NS, "rect")
       const on = s.sel === it.id
       let fill = t.color
-      if (it.type === "scrap_bin" && d.live && d.live.fill != null) fill = d.live.fill >= (d.live.alert_kg / d.live.capacity_kg) ? "#e5484d" : d.live.fill >= 0.5 ? "#f5a524" : "#22a06b"
+      if (it.type === "scrap_bin" && bf[it.id]) fill = binColor(bf[it.id].fill)
       Object.entries({ x: -it.w / 2, y: -it.h / 2, width: it.w, height: it.h, rx: 0.4, fill, "fill-opacity": it.type === "aisle" ? 0.35 : 0.75, stroke: on ? "#ffffff" : "rgba(0,0,0,0.35)", "stroke-width": on ? 0.35 : 0.12 }).forEach(([k, v]) => r.setAttribute(k, v))
       g.appendChild(r)
       const tx = document.createElementNS(NS, "text")
-      const fs = Math.max(0.8, Math.min(1.6, it.w / Math.max(6, it.label.length * 0.9)))
-      Object.entries({ x: 0, y: fs * 0.35, "font-size": fs, "text-anchor": "middle", fill: "#ffffff", "font-weight": 600 }).forEach(([k, v]) => tx.setAttribute(k, v))
+      const b2 = it.type === "scrap_bin" ? bf[it.id] : null
+      const fs = Math.max(0.6, Math.min(1.6, it.w / Math.max(6, it.label.length * 0.9)))
+      Object.entries({ x: 0, y: b2 ? -fs * 0.25 : fs * 0.35, "font-size": fs, "text-anchor": "middle", fill: "#ffffff", "font-weight": 600 }).forEach(([k, v]) => tx.setAttribute(k, v))
       tx.textContent = it.label
+      if (b2) {  // 보관함: 이름 아래 줄에 보관량/용량
+        const t2 = document.createElementNS(NS, "text")
+        Object.entries({ x: 0, y: fs * 1.05, "font-size": fs * 0.9, "text-anchor": "middle", fill: "#ffffff", "font-weight": 700 }).forEach(([k, v]) => t2.setAttribute(k, v))
+        t2.textContent = `${Math.round(b2.kg)}/${Math.round(b2.cap)}kg`
+        g.appendChild(t2)
+      }
       g.appendChild(tx)
       if (on) {
         const h = document.createElementNS(NS, "rect")
@@ -160,10 +182,16 @@ export default function (component) {
     if (!it) return
     const set = (id, v) => { const el = $(id); if (root.ownerDocument.activeElement !== el) el.value = v }
     set("eLabel", it.label); fillSel($("eType"), it.type); set("eW", it.w); set("eH", it.h); set("eRot", it.rot)
+    $("eCapWrap").hidden = it.type !== "scrap_bin"
+    if (it.type === "scrap_bin") set("eCap", Number(it.capacity_kg) || DEF_CAP)
   }
   const upd = (fn) => { const it = selItem(); if (!it) return; fn(it); s.dirty = true; draw2d(); say() }
   $("eLabel").oninput = (e) => upd((it) => { it.label = e.target.value.slice(0, 30) })
-  $("eType").onchange = (e) => upd((it) => { it.type = e.target.value })
+  $("eType").onchange = (e) => upd((it) => { it.type = e.target.value; if (it.type === "scrap_bin" && !it.capacity_kg) it.capacity_kg = DEF_CAP })
+  $("eCap").onchange = (e) => {
+    upd((it) => { const v = Number(e.target.value); if (v >= 1 && v <= 100000) it.capacity_kg = Math.round(v * 10) / 10 })
+    const it = selItem(); if (it) say(`보관함 용량 ${Math.round(it.capacity_kg).toLocaleString()}kg · 보관함 용량 합계 ${Math.round(totalCap()).toLocaleString()}kg — 저장해야 앱 전체에 반영됩니다.`)
+  }
   $("eW").onchange = (e) => upd((it) => { it.w = Math.max(0.5, snap(Number(e.target.value) || it.w)) })
   $("eH").onchange = (e) => upd((it) => { it.h = Math.max(0.5, snap(Number(e.target.value) || it.h)) })
   $("eRot").onchange = (e) => upd((it) => { it.rot = ((Number(e.target.value) || 0) % 360 + 360) % 360 })
@@ -173,7 +201,10 @@ export default function (component) {
   $("add").onclick = () => {
     const t = $("addType").value, ty = tmap[t] || { name: "기타 구역" }
     const id = t + "_" + Date.now().toString(36)
-    L.items.push({ id, type: t, label: ty.name, x: snap(L.width_m / 2 - 4), y: snap(L.height_m / 2 - 3), w: 8, h: 6, rot: 0 })
+    const nb = L.items.filter((i) => i.type === "scrap_bin").length
+    const it = { id, type: t, label: t === "scrap_bin" && nb ? `${ty.name} ${nb + 1}` : ty.name, x: snap(L.width_m / 2 - 4), y: snap(L.height_m / 2 - 3), w: 8, h: 6, rot: 0 }
+    if (t === "scrap_bin") it.capacity_kg = DEF_CAP
+    L.items.push(it)
     s.sel = id; s.dirty = true; if (s.mode !== "2d") setMode("2d"); draw2d(); say("구역을 추가했습니다. 끌어서 옮기세요.")
   }
   $("save").onclick = () => { setTriggerValue("save", JSON.parse(JSON.stringify(L))); say("저장 중…") }
@@ -225,20 +256,21 @@ export default function (component) {
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(W, H), new THREE.MeshStandardMaterial({ color: 0x475569 }))
     floor.rotation.x = -Math.PI / 2; group.add(floor)
     const grid = new THREE.GridHelper(Math.max(W, H), Math.max(W, H) / 5, 0x64748b, 0x334155); grid.position.y = 0.01; group.add(grid)
+    const bf = binFill()
     L.items.forEach((it) => {
       const t = tmap[it.type] || { height_m: 2, color: "#4fb3bf" }
       let h = t.height_m, color = t.color
-      if (it.type === "scrap_bin" && d.live && d.live.fill != null) {
-        const ratio = d.live.alert_kg / d.live.capacity_kg
-        color = d.live.fill >= ratio ? "#e5484d" : d.live.fill >= 0.5 ? "#f5a524" : "#22a06b"
+      const b = it.type === "scrap_bin" ? bf[it.id] : null
+      if (b) {
+        color = binColor(b.fill)
         const shell = new THREE.Mesh(new THREE.BoxGeometry(it.w, t.height_m, it.h), new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.35 }))
         shell.position.set(it.x + it.w / 2 - W / 2, t.height_m / 2, it.y + it.h / 2 - H / 2); shell.rotation.y = -it.rot * Math.PI / 180; group.add(shell)
-        h = Math.max(0.1, t.height_m * Math.min(d.live.fill, 1))
+        h = Math.max(0.1, t.height_m * Math.min(b.fill, 1))
       }
       const m = new THREE.Mesh(new THREE.BoxGeometry(it.w, h, it.h), new THREE.MeshStandardMaterial({ color, transparent: it.type === "aisle", opacity: it.type === "aisle" ? 0.5 : 1 }))
       m.position.set(it.x + it.w / 2 - W / 2, h / 2, it.y + it.h / 2 - H / 2); m.rotation.y = -it.rot * Math.PI / 180; group.add(m)
       if (it.type !== "aisle") {
-        const sp = label(it.type === "scrap_bin" && d.live && d.live.scrap_kg != null ? `${it.label} ${Math.round(d.live.scrap_kg)}/${Math.round(d.live.capacity_kg)}kg` : it.label)
+        const sp = label(b ? `${it.label} ${Math.round(b.kg)}/${Math.round(b.cap)}kg` : it.label)
         sp.position.set(m.position.x, Math.max(h, t.height_m) + 1.6, m.position.z); group.add(sp)
       }
     })
@@ -247,7 +279,7 @@ export default function (component) {
     cancelAnimationFrame(s.three.raf)
     const loop = () => { if (s.mode !== "3d") return; renderer.render(scene, cam); s.three.raf = requestAnimationFrame(loop) }
     loop()
-    say(d.live && d.live.scrap_kg != null ? `폐플라스틱 보관함: ${Math.round(d.live.scrap_kg)}kg / ${Math.round(d.live.capacity_kg)}kg (시연 기준값) · 끌기 = 회전, 휠 = 확대, 오른쪽 끌기 = 이동` : "끌기 = 회전, 휠 = 확대, 오른쪽 끌기 = 이동")
+    say(d.live && d.live.scrap_kg != null ? `폐플라스틱 보관량 합계: ${Math.round(d.live.scrap_kg)}kg / 보관함 용량 합계 ${Math.round(totalCap()).toLocaleString()}kg (시연 기준값, 앞 보관함부터 채움) · 끌기 = 회전, 휠 = 확대, 오른쪽 끌기 = 이동` : "끌기 = 회전, 휠 = 확대, 오른쪽 끌기 = 이동")
   }
 
   const setMode = (m) => {

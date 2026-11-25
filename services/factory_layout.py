@@ -1,7 +1,10 @@
 """가상 공장 배치도(2D 편집 · 3D 보기) 저장소 (사용자 요청 2026-11-14).
 
 - 실제 공장 크기를 모르므로 시연용 기본 배치(80m x 50m, DEMO_ASSUMED)를 베이스로 둔다.
-- 사람마다 따로 저장(사용자 결정): 화면의 작업자 ID를 소유자로 DB factory_layout 테이블에 저장. 저장 전에는 기본 배치.
+- 공장 배치 하나만 저장(2026-11-25 사용자 결정, 이전: 작업자 ID별). DB factory_layout 의 owner='factory' 한 줄.
+  예전 작업자별 배치가 있으면 가장 최근 것을 공장 배치로 쓴다. 저장 전에는 기본 배치.
+- 폐플라스틱 보관함마다 용량(capacity_kg)을 둔다(2026-11-25). 보관함 용량 합계 = 공장 보관 용량(config.facility()).
+  쌓인 양은 배치 순서대로 앞 보관함을 100%까지 채운 뒤 다음 보관함으로 넘긴다(split_bins).
 - 구역은 옮기기·크기 조절·회전·추가·삭제가 가능하다. 저장 시 값 범위를 검사한다(공장 밖·너무 작은 구역·개수 초과 거부).
 - 3D의 폐플라스틱 보관함 높이·색은 보관량(storage_projection, 시연 기준값 + 확정 폐기 장부)에서 계산한다.
 """
@@ -24,6 +27,14 @@ TYPES = {  # 종류 → 이름, 3D 높이(m), 색
     "custom": ("기타 구역", 2.0, "#4fb3bf"),
 }
 MAX_ITEMS = 60
+OWNER = "factory"
+MAX_BIN_KG = 100_000.0
+
+
+def default_bin_kg() -> float:
+    """보관함 기본 용량 = 승인된 가상 창고 용량(configs/facility_demo.json, 1,000kg)."""
+    from services.config import facility_base
+    return float(facility_base()["max_capacity_kg"])
 
 
 def default_layout() -> dict:
@@ -40,9 +51,11 @@ def default_layout() -> dict:
         ("office", "office", "사무·휴게", 32, 38, 14, 8),
         ("aisle_main", "aisle", "주 통로", 4, 31.5, 66, 2.5),
     ]
-    return {"version": 1, "width_m": 80, "height_m": 50, "provenance": "DEMO_ASSUMED",
-            "items": [{"id": i, "type": t, "label": lab, "x": x, "y": y, "w": w, "h": h, "rot": 0}
-                      for i, t, lab, x, y, w, h in it]}
+    items = [{"id": i, "type": t, "label": lab, "x": x, "y": y, "w": w, "h": h, "rot": 0} for i, t, lab, x, y, w, h in it]
+    for i in items:
+        if i["type"] == "scrap_bin":
+            i["capacity_kg"] = default_bin_kg()
+    return {"version": 1, "width_m": 80, "height_m": 50, "provenance": "DEMO_ASSUMED", "items": items}
 
 
 def validate(layout: dict) -> dict:
@@ -68,34 +81,67 @@ def validate(layout: dict) -> dict:
         if iid in ids:
             iid = f"{iid}_{len(clean)}"
         ids.add(iid)
-        clean.append({"id": iid, "type": t, "label": str(it.get("label") or TYPES[t][0])[:30],
-                      "x": round(x, 2), "y": round(y, 2), "w": round(w, 2), "h": round(h, 2), "rot": round(rot % 360, 1)})
+        row = {"id": iid, "type": t, "label": str(it.get("label") or TYPES[t][0])[:30],
+               "x": round(x, 2), "y": round(y, 2), "w": round(w, 2), "h": round(h, 2), "rot": round(rot % 360, 1)}
+        if t == "scrap_bin":
+            try:
+                cap = float(it.get("capacity_kg") or default_bin_kg())
+            except (TypeError, ValueError) as e:
+                raise ServiceError("INVALID_INPUT", f"보관함 '{row['label']}' 용량이 숫자가 아닙니다.") from e
+            if not (1 <= cap <= MAX_BIN_KG):
+                raise ServiceError("INVALID_INPUT", f"보관함 '{row['label']}' 용량은 1~{MAX_BIN_KG:,.0f} kg 범위여야 합니다.")
+            row["capacity_kg"] = round(cap, 1)
+        clean.append(row)
     return {"version": 1, "width_m": W, "height_m": H, "provenance": "USER_EDITED", "items": clean}
 
 
-def get_layout(owner: str) -> dict:
+def get_layout() -> dict:
+    """공장 배치. 공장 배치가 없으면 예전 작업자별 배치 중 가장 최근 것, 그것도 없으면 기본 배치."""
     with db.connect() as con:
-        r = con.execute("SELECT layout_json, updated_at FROM factory_layout WHERE owner=?", (owner,)).fetchone()
+        r = con.execute("SELECT layout_json, updated_at FROM factory_layout WHERE owner=?", (OWNER,)).fetchone() \
+            or con.execute("SELECT layout_json, updated_at FROM factory_layout ORDER BY updated_at DESC LIMIT 1").fetchone()
     if not r:
         return {**default_layout(), "saved": False}
-    return {**json.loads(r[0]), "saved": True, "updated_at": r[1]}
+    lay = json.loads(r[0])
+    for it in lay.get("items", []):  # 용량 기능 이전에 저장된 보관함 → 기본 용량
+        if it.get("type") == "scrap_bin" and not it.get("capacity_kg"):
+            it["capacity_kg"] = default_bin_kg()
+    return {**lay, "saved": True, "updated_at": r[1]}
 
 
-def save_layout(owner: str, layout: dict) -> dict:
-    if not (owner or "").strip():
-        raise ServiceError("INVALID_INPUT", "작업자 ID가 필요합니다(배치는 사람마다 따로 저장).")
+def save_layout(layout: dict) -> dict:
     clean = validate(layout)
     with db.connect() as con:
         con.execute("INSERT INTO factory_layout (owner, layout_json, updated_at) VALUES (?,?,?) "
                     "ON CONFLICT(owner) DO UPDATE SET layout_json=excluded.layout_json, updated_at=excluded.updated_at",
-                    (owner.strip(), json.dumps(clean, ensure_ascii=False), db.now()))
+                    (OWNER, json.dumps(clean, ensure_ascii=False), db.now()))
     return clean
 
 
-def reset_layout(owner: str) -> dict:
+def reset_layout() -> dict:
+    """기본 배치로(예전 작업자별 배치까지 지운다 — 남겨 두면 다시 불러와지므로)."""
     with db.connect() as con:
-        con.execute("DELETE FROM factory_layout WHERE owner=?", (owner,))
+        con.execute("DELETE FROM factory_layout")
     return default_layout()
+
+
+def bins(layout: dict | None = None) -> list[dict]:
+    """보관함 목록(채우는 순서 = 배치 순서): [{id, label, capacity_kg}]."""
+    lay = layout or get_layout()
+    return [{"id": i["id"], "label": i["label"], "capacity_kg": float(i.get("capacity_kg") or default_bin_kg())}
+            for i in lay.get("items", []) if i.get("type") == "scrap_bin"]
+
+
+def split_bins(total_kg: float, caps: list[float]) -> list[float]:
+    """앞 보관함을 100%까지 채우고 남는 양을 다음 보관함으로. 전체 용량을 넘는 양은 마지막 보관함에 더한다(초과 표시)."""
+    out, left = [], max(float(total_kg), 0.0)
+    for c in caps:
+        k = min(left, c)
+        out.append(k)
+        left -= k
+    if out and left > 0:
+        out[-1] += left
+    return out
 
 
 def live_status(as_of: str | None = None, day: str | None = None, days: int = 14) -> dict:
@@ -105,11 +151,14 @@ def live_status(as_of: str | None = None, day: str | None = None, days: int = 14
         s = get_storage_projection(as_of, days=days)
         cap, alert = s["max_capacity_kg"], s["alert_kg"]
         cur = s["current_stock_kg"] if not day else next(r["end_kg"] for r in s["projection"] if r["date"] == day)
-        return {"scrap_kg": round(cur, 1), "capacity_kg": cap, "alert_kg": alert, "day": day,
+        bs = bins()
+        per = [{**b, "kg": round(k, 1), "fill": k / b["capacity_kg"]}
+               for b, k in zip(bs, split_bins(cur, [b["capacity_kg"] for b in bs]))]
+        return {"scrap_kg": round(cur, 1), "capacity_kg": cap, "alert_kg": alert, "alert_ratio": alert / cap, "day": day,
                 "fill": max(0.0, min(cur / cap, 1.2)), "dates": [r["date"] for r in s["projection"]],
-                "provenance": "DEMO_ASSUMED"}
+                "bins": per, "provenance": "DEMO_ASSUMED"}
     except Exception as e:  # noqa: BLE001 - 배치도는 보관량 없이도 표시
-        return {"scrap_kg": None, "capacity_kg": None, "alert_kg": None, "fill": None, "error": str(e)[:120]}
+        return {"scrap_kg": None, "capacity_kg": None, "alert_kg": None, "fill": None, "bins": [], "error": str(e)[:120]}
 
 
 def type_table() -> list[dict]:

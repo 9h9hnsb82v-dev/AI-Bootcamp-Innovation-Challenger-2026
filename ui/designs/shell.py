@@ -70,7 +70,8 @@ def run(root: Path, design: str) -> None:
     nav = st.navigation(_pages(root / "ui/pages", design), position="sidebar" if design == "d" else "top")
     with st.sidebar:
         _period()
-        st.caption("창고: 용량 1,000 kg · 기준 보관량 300 kg · 리드타임 2일 — 단중·시연 불량률·창고 정책은 "
+        from services.config import facility
+        st.caption(f"창고: 용량 {facility()['max_capacity_kg']:,.0f} kg(공장 배치도 보관함 합계) · 기준 보관량 300 kg · 리드타임 2일 — 단중·시연 불량률·창고 정책은 "
                    "사용자 승인 가상값입니다(실측·법령 기준 아님).")
         _demo_admin()
         if design == "d":
